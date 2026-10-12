@@ -1,0 +1,66 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.HealthyDays.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/Theme.HealthyDays.PopupOverlay"
+            app:contentInsetStart="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Icono de menú (hamburguesa) -->
+                <!--<ImageView
+                    android:id="@+id/menuIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="18dp"
+                    android:src="@drawable/menu"
+                    android:contentDescription="@string/menu_icon_desc"
+                    app:tint="@color/black" />-->
+
+                <!-- Título -->
+                <TextView
+                    android:id="@+id/toolbarTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/home"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:fontFamily="sans-serif"
+                    android:textSize="18sp" />
+
+                <!-- Icono de tres puntos (settings) -->
+                <!--<ImageView
+                    android:id="@+id/moreIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="18dp"
+                    android:src="@drawable/settings"
+                    android:contentDescription="@string/setting_desc"
+                    app:tint="@color/black" />-->
+
+            </LinearLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <include layout="@layout/content_main" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
