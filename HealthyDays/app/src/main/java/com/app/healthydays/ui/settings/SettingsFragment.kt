@@ -384,7 +384,7 @@ class SettingsFragment : Fragment() {
             .setNegativeButton(android.R.string.cancel, null).show()
     }
 
-    private fun exportDataToFile(uri: android.net.Uri) {
+    private fun exportDataToFile(uri: Uri) {
         viewLifecycleOwner.lifecycleScope.launch {
             val json = withContext(Dispatchers.IO) {
                 val habits = database.habitDao().getAllHabits()
@@ -399,7 +399,7 @@ class SettingsFragment : Fragment() {
             }
 
             try {
-                requireContext().contentResolver.openOutputStream(uri)?.use { outputStream ->
+                requireContext().contentResolver.openOutputStream(uri, "wt")?.use { outputStream ->
                     outputStream.write(json.toByteArray(Charsets.UTF_8))
                 }
                 android.widget.Toast.makeText(
@@ -472,6 +472,11 @@ class SettingsFragment : Fragment() {
                 requireActivity().recreate()
 
             } catch (e: JsonSyntaxException) {
+                android.util.Log.e(
+                    "HealthyDaysImport",
+                    "Error al importar la copia de seguridad",
+                    e
+                )
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.import_error),
@@ -479,6 +484,11 @@ class SettingsFragment : Fragment() {
                 ).show()
 
             } catch (e: Exception) {
+                android.util.Log.e(
+                    "HealthyDaysImport",
+                    "Error al importar la copia de seguridad",
+                    e
+                )
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.import_error),

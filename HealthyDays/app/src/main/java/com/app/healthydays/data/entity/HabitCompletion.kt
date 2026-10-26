@@ -1,5 +1,6 @@
 package com.app.healthydays.data.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -24,5 +25,11 @@ data class HabitCompletion(
     val habitId: Int,
     val habitName: String,
     val date: String,
-    val isCompleted: Boolean
+    val isCompleted: Boolean,
+
+    @ColumnInfo(defaultValue = "'OTHER'")
+    val categoryId: String = "OTHER",
+
+    @ColumnInfo(defaultValue = "0")
+    val sortOrder: Int = 0
 )

@@ -28,4 +28,7 @@
     <color name="healthy_day_4">#FF407332</color>
     <color name="healthy_day_5">#FF38592F</color>
     <color name="habit_item_background">#FF303030</color>
+    <color name="icon_background">@color/white</color>
+    <color name="category_button_background">@color/habit_item_background</color>
+    <color name="selected_habit">@color/habit_item_background</color>
 </resources>

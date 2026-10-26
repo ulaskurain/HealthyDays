@@ -1,3 +1,4 @@
+
 package com.app.healthydays.data.dao
 
 import androidx.room.*
@@ -15,29 +16,29 @@ interface HabitCompletionDao {
     suspend fun insertCompletions(completions: List<HabitCompletion>)
 
     @Query("""
-        SELECT 
+        SELECT
             hc.habitId AS habitId,
             hc.habitName AS name,
-            hc.isCompleted AS isCompleted
+            hc.isCompleted AS isCompleted,
+            h.categoryId AS categoryId,
+            h.sortOrder AS sortOrder
         FROM habit_completion hc
-        INNER JOIN habit h
-            ON h.habitId = hc.habitId
+        INNER JOIN habit h ON h.habitId = hc.habitId
         WHERE hc.date = :date
-        ORDER BY h.habitId
+        ORDER BY h.sortOrder, h.habitId
     """)
     fun getHabitsWithCompletionByDateFlow(date: String): Flow<List<HabitItem>>
 
-    // -------------------------
-    // HISTORY
-    // -------------------------
     @Query("""
         SELECT
-            habitId,
-            habitName AS name,
-            isCompleted
-        FROM habit_completion
-        WHERE date = :date
-        ORDER BY habitId
+            hc.habitId AS habitId,
+            hc.habitName AS name,
+            hc.isCompleted AS isCompleted,
+            hc.categoryId AS categoryId,
+            hc.sortOrder AS sortOrder
+        FROM habit_completion hc
+        WHERE hc.date = :date
+        ORDER BY hc.sortOrder, hc.habitId
     """)
     suspend fun getHabitCompletionsByDate(date: String): List<HabitItem>
 
@@ -62,7 +63,20 @@ interface HabitCompletionDao {
     """)
     suspend fun getCompletion(habitId: Int, date: String): HabitCompletion?
 
+    @Query("""
+        UPDATE habit_completion
+        SET sortOrder = :sortOrder,
+            categoryId = :categoryId
+        WHERE habitId = :habitId
+          AND date = :today
+    """)
+    suspend fun updateTodayHabitOrder(
+        habitId: Int,
+        sortOrder: Int,
+        categoryId: String,
+        today: String
+    )
+
     @Query("DELETE FROM habit_completion")
     suspend fun deleteAllCompletions()
 }
-

@@ -53,4 +53,14 @@
     <string name="about_healthy_days_message">Healthy Days a été créée dans le but d\'aider les personnes à intégrer et à maintenir des habitudes saines dans leur quotidien.\n\nL\'application permet d\'enregistrer les habitudes que nous souhaitons travailler, de suivre leur respect et de consulter nos progrès au fil du temps. L\'idée est que maintenir de bonnes habitudes soit un processus constant et conscient, et que le fait de disposer d\'un historique nous aide à constater nos progrès et à rester motivés.\n\nDe plus, Healthy Days permet d\'évaluer chaque journée, en créant un historique qui nous aide à observer notre évolution et à avoir une vision plus complète de notre régularité.\n\nDe petits changements maintenus dans le temps peuvent devenir de grandes avancées. Healthy Days est conçue pour vous accompagner dans ce processus.\n\nVersion %1$s</string>
     <string name="notification_title">Comment se passe ta journée?</string>
     <string name="notification_message">Prenez un moment pour examiner vos habitudes et noter vos progrès.</string>
+    <string name="category_physical_health">Santé physique</string>
+    <string name="category_nutrition">Nutrition et Hydratation</string>
+    <string name="category_mental_wellbeing">Bien-être mental</string>
+    <string name="category_learning">Apprentissage et Développement personnel</string>
+    <string name="category_social">Relations sociales</string>
+    <string name="category_productivity">Travail et Productivité</string>
+    <string name="category_home">Foyer et vie Quotidienne</string>
+    <string name="category_hobbies">Loisirs et Détente</string>
+    <string name="category_other">Autres</string>
+    <string name="category">Catégorie</string>
 </resources>

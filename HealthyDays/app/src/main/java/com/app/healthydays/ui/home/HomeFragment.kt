@@ -36,29 +36,20 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        homeViewModel =
-            ViewModelProvider(this)[HomeViewModel::class.java]
+        homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
 
-        _binding = FragmentHomeBinding.inflate(
-            inflater,
-            container,
-            false
-        )
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         // Binding del include del rating
-        dailyBinding = ItemRatingBinding.bind(
-            binding.dailyRating.root
-        )
-
+        dailyBinding = ItemRatingBinding.bind(binding.dailyRating.root)
 
         // RecyclerView
-        habitAdapter = HabitAdapter(emptyList()) { habitId, isChecked ->
-
-            homeViewModel.updateHabitChecked(
-                habitId,
-                isChecked
-            )
-        }
+        habitAdapter = HabitAdapter(
+            habits = emptyList(),
+            onCheckChanged = { habitId: Int, isChecked: Boolean ->
+                homeViewModel.updateHabitChecked(habitId, isChecked)
+            }
+        )
 
         binding.recyclerHabits.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -82,6 +73,7 @@ class HomeFragment : Fragment() {
 
         // Primero preparamos el día
         homeViewModel.initializeDay(today)
+        habitAdapter.updateCategoryOrder(homeViewModel.getCategoryOrder())
 
         // Después observamos los hábitos del día
         viewLifecycleOwner.lifecycleScope.launch {

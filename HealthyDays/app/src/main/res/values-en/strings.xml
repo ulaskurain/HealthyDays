@@ -53,4 +53,14 @@
     <string name="about_healthy_days_message">Healthy Days was created with the goal of helping people adopt and maintain healthy habits in their daily lives.\n\nThe app allows you to log the habits you want to work on, track your adherence to them, and view your progress over time. The idea is to make maintaining healthy habits a consistent and mindful process, using a log to help you see your progress and stay motivated.\n\nAdditionally, Healthy Days lets you rate each day, creating a history that helps you observe your evolution and gain a more complete picture of your consistency.\n\nSmall changes sustained over time can lead to significant progress. Healthy Days is designed to support you throughout that process.\n\nVersion %1$s</string>
     <string name="notification_title">How\'s your day going?</string>
     <string name="notification_message">Take a moment to review your habits and track your progress.</string>
+    <string name="category_physical_health">Physical health</string>
+    <string name="category_nutrition">Nutrition &amp; Hydration</string>
+    <string name="category_mental_wellbeing">Mental wellbeing</string>
+    <string name="category_learning">Learning &amp; Personal growth</string>
+    <string name="category_social">Social relationships</string>
+    <string name="category_productivity">Work &amp; Productivity</string>
+    <string name="category_home">Home &amp; Daily life</string>
+    <string name="category_hobbies">Hobbies &amp; Leisure</string>
+    <string name="category_other">Other</string>
+    <string name="category">Category</string>
 </resources>

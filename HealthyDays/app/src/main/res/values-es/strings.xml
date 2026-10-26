@@ -53,4 +53,14 @@
     <string name="about_healthy_days_message">Healthy Days nace con el objetivo de ayudar a las personas a incorporar y mantener hábitos saludables en su día a día.\n\nLa aplicación permite registrar los hábitos que queremos trabajar, llevar un seguimiento de su cumplimiento y consultar nuestro progreso a lo largo del tiempo. La idea es que mantener unos hábitos saludables sea un proceso constante y consciente, y que disponer de un registro nos ayude a ver nuestros avances y mantener la motivación.\n\nAdemás, Healthy Days permite valorar cada día, creando un historial que nos ayuda a observar nuestra evolución y a tener una visión más completa de nuestra constancia.\n\nPequeños cambios mantenidos en el tiempo pueden convertirse en grandes avances. Healthy Days está pensada para acompañarte en ese proceso.\n\nVersión %1$s</string>
     <string name="notification_title">¿Qué tal va tu día?</string>
     <string name="notification_message">Tómate un momento para revisar tus hábitos y registrar tu progreso.</string>
+    <string name="category_physical_health">Salud física</string>
+    <string name="category_nutrition">Nutrición e Hidratación</string>
+    <string name="category_mental_wellbeing">Bienestar mental</string>
+    <string name="category_learning">Aprendizaje y Crecimiento personal</string>
+    <string name="category_social">Relaciones sociales</string>
+    <string name="category_productivity">Trabajo y Productividad</string>
+    <string name="category_home">Hogar y Vida cotidiana</string>
+    <string name="category_hobbies">Aficiones y Ocio</string>
+    <string name="category_other">Otros</string>
+    <string name="category">Categoría</string>
 </resources>

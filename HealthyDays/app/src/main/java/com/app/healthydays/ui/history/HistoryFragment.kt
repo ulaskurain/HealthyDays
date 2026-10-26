@@ -16,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.healthydays.R
 import com.app.healthydays.data.entity.Day
+import com.app.healthydays.data.entity.HabitCategory
 import com.app.healthydays.databinding.FragmentHistoryBinding
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import kotlinx.coroutines.launch
@@ -63,8 +64,27 @@ class HistoryFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
+        val prefs = requireContext().getSharedPreferences(
+            "habit_order",
+            android.content.Context.MODE_PRIVATE
+        )
 
-        historyAdapter = HistoryAdapter(emptyList())
+        val savedOrder = prefs.getString("category_order", null)
+
+        val validCategoryIds = HabitCategory.entries.map { it.id }
+
+        val categoryOrder = savedOrder
+            ?.split(",")
+            ?.filter { it in validCategoryIds }
+            ?.let { saved ->
+                (saved + validCategoryIds).distinct()
+            }
+            ?: validCategoryIds
+
+        historyAdapter = HistoryAdapter(
+            habits = emptyList(),
+            categoryOrder = categoryOrder
+        )
 
         binding.recyclerHistoryHabits.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -78,6 +98,16 @@ class HistoryFragment : Fragment() {
         val today = CalendarDay.today()
         selectedDay = today
         binding.calendarView.setSelectedDate(today)
+
+        val locale = resources.configuration.locales[0]
+        binding.calendarView.setTitleFormatter { day ->
+            val month = java.time.YearMonth.of(day.year, day.month)
+            val formatter = java.time.format.DateTimeFormatter.ofPattern("MMMM yyyy", locale)
+
+            month.atDay(1).format(formatter).replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(locale) else it.toString()
+            }
+        }
 
         binding.calendarView.setOnDateChangedListener { _, date, selected ->
 

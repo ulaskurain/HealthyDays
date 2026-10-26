@@ -1,22 +1,23 @@
+
 package com.app.healthydays.data.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.withTransaction
 import com.app.healthydays.data.dao.DayDao
 import com.app.healthydays.data.dao.HabitCompletionDao
 import com.app.healthydays.data.dao.HabitDao
+import com.app.healthydays.data.dto.ExportData
 import com.app.healthydays.data.entity.Day
 import com.app.healthydays.data.entity.Habit
 import com.app.healthydays.data.entity.HabitCompletion
-import androidx.room.withTransaction
-import com.app.healthydays.data.dto.ExportData
 
 @Database(
     entities = [Habit::class, Day::class, HabitCompletion::class],
-    version = 1
+    version = 2,
+    exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -31,7 +32,6 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
@@ -41,7 +41,6 @@ abstract class AppDatabase : RoomDatabase() {
                     .build()
 
                 INSTANCE = instance
-
                 instance
             }
         }
@@ -50,26 +49,33 @@ abstract class AppDatabase : RoomDatabase() {
     suspend fun importData(data: ExportData) {
         withTransaction {
             val currentHabits = habitDao().getAllHabits()
-            // Relacionamos cada nombre del backup con el ID real de esta instalación
             val habitIdMap = mutableMapOf<String, Int>()
+
+            // Restaurar los hábitos por nombre, incluyendo categoría y orden.
             for (backupHabit in data.habits) {
                 val existingHabit = currentHabits.firstOrNull {
                     it.name == backupHabit.name
                 }
 
                 if (existingHabit != null) {
+                    val restoredHabit = backupHabit.copy(
+                        habitId = existingHabit.habitId
+                    )
+
+                    habitDao().updateHabit(restoredHabit)
                     habitIdMap[backupHabit.name] = existingHabit.habitId
                 } else {
                     val newId = habitDao().insertHabit(
-                        Habit(name = backupHabit.name)
+                        backupHabit.copy(habitId = 0)
                     )
+
                     if (newId != -1L) {
                         habitIdMap[backupHabit.name] = newId.toInt()
                     }
                 }
             }
 
-            // Importar días sin modificar los que ya existen
+            // Restaurar los días.
             for (backupDay in data.days) {
                 val existingDay = dayDao().getDayByDate(backupDay.date)
 
@@ -78,23 +84,24 @@ abstract class AppDatabase : RoomDatabase() {
                 }
             }
 
-            // Importar completions usando los IDs de esta instalación
+            // Restaurar finalizaciones, incluidas las de hábitos eliminados.
             for (backupCompletion in data.completions) {
-                val currentHabitId =
-                    habitIdMap[backupCompletion.habitName]
-                        ?: continue
+                val currentHabitId = habitIdMap[backupCompletion.habitName]
 
-                val existingCompletion =
-                    habitCompletionDao().getCompletion(
-                        habitId = currentHabitId,
-                        date = backupCompletion.date
-                    )
+                val restoredCompletion = if (currentHabitId != null) {
+                    backupCompletion.copy(habitId = currentHabitId)
+                } else {
+                    backupCompletion
+                }
+
+                val existingCompletion = habitCompletionDao().getCompletion(
+                    habitId = restoredCompletion.habitId,
+                    date = restoredCompletion.date
+                )
 
                 if (existingCompletion == null) {
                     habitCompletionDao().insertOrUpdateCompletion(
-                        backupCompletion.copy(
-                            habitId = currentHabitId
-                        )
+                        restoredCompletion
                     )
                 }
             }

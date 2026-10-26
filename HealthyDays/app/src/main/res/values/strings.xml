@@ -55,5 +55,15 @@
     <string name="notification_title">How\'s your day going?</string>
     <string name="notification_message">Take a moment to review your habits and track your progress.</string>
     <string name="zero_hour" translatable="false">00:00</string>
+    <string name="category_physical_health">Physical health</string>
+    <string name="category_nutrition">Nutrition &amp; Hydration</string>
+    <string name="category_mental_wellbeing">Mental wellbeing</string>
+    <string name="category_learning">Learning &amp; Personal growth</string>
+    <string name="category_social">Social relationships</string>
+    <string name="category_productivity">Work &amp; Productivity</string>
+    <string name="category_home">Home &amp; Daily life</string>
+    <string name="category_hobbies">Hobbies &amp; Leisure</string>
+    <string name="category_other">Other</string>
+    <string name="category">Category</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

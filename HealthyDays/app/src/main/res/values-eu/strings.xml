@@ -53,4 +53,14 @@
     <string name="about_healthy_days_message">Healthy Days pertsonak eguneroko bizitzan ohitura osasungarriak txertatzen eta mantentzen laguntzeko helburuarekin sortu da.\n\nAplikazioak landu nahi ditugun ohiturak erregistratzeko, horien betetze-mailaren jarraipena egiteko eta denboran zehar izan dugun aurrerapena kontsultatzeko aukera ematen du. Helburua da ohitura osasungarriak mantentzea etengabeko eta kontzientea den prozesu bat izatea, eta erregistro bat izateak gure aurrerapenak ikusten eta motibazioa mantentzen laguntzea.\n\nGainera, Healthy Days-ek egun bakoitza baloratzeko aukera ematen du, gure bilakaera behatzen eta gure konstantziaren ikuspegi osoagoa izaten laguntzen digun historia bat sortuz.\n\nDenboran zehar mantentzen diren aldaketa txikiak aurrerapen handiak bihur daitezke. Healthy Days prozesu horretan laguntzeko pentsatuta dago.\n\n%1$s bertsioa</string>
     <string name="notification_title">Zer moduz doa zure eguna?</string>
     <string name="notification_message">Hartu une bat zure ohiturak berrikusteko eta zure aurrerapena erregistratzeko.</string>
+    <string name="category_physical_health">Osasun fisikoa</string>
+    <string name="category_nutrition">Elikadura eta Hidratazioa</string>
+    <string name="category_mental_wellbeing">Ongizate mentala</string>
+    <string name="category_learning">Ikaskuntza eta Garapen pertsonala</string>
+    <string name="category_social">Harreman sozialak</string>
+    <string name="category_productivity">Lana eta Produktibitatea</string>
+    <string name="category_home">Etxea eta Eguneroko bizitza</string>
+    <string name="category_hobbies">Zaletasunak eta Aisialdia</string>
+    <string name="category_other">Bestelakoak</string>
+    <string name="category">Kategoria</string>
 </resources>
