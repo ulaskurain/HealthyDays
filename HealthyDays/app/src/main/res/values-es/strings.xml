@@ -74,4 +74,5 @@
     <string name="stats_no_data">Sin datos en este periodo</string>
     <string name="stats_habit_regularity">Regularidad por hábito</string>
     <string name="stats_habit_days">%1$d de %2$d días</string>
+    <string name="stats_filter">Filtro de estadísticas</string>
 </resources>

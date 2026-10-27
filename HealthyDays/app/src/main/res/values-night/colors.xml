@@ -41,4 +41,6 @@
     <color name="stats_chart_text">@color/light_gray</color>
     <color name="stats_bar_background">@color/dark_gray</color>
     <color name="stats_bar_fill">@color/healthy_day_3</color>
+    <color name="stats_tooltip_bg">@color/light_gray</color>
+    <color name="stats_tooltip_text">@color/black</color>
 </resources>
