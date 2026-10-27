@@ -57,6 +57,13 @@ interface HabitCompletionDao {
 
     @Query("""
         SELECT * FROM habit_completion
+        WHERE date >= :fromDate
+        ORDER BY date, habitId
+    """)
+    suspend fun getCompletionsFrom(fromDate: String): List<HabitCompletion>
+
+    @Query("""
+        SELECT * FROM habit_completion
         WHERE habitId = :habitId
         AND date = :date
         LIMIT 1

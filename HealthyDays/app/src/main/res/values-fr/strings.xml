@@ -63,4 +63,15 @@
     <string name="category_hobbies">Loisirs et Détente</string>
     <string name="category_other">Autres</string>
     <string name="category">Catégorie</string>
+    <string name="menu_stats">Statistiques</string>
+    <string name="stats_range_7">7 jours</string>
+    <string name="stats_range_30">30 jours</string>
+    <string name="stats_range_all">Tout</string>
+    <string name="stats_average">Réalisation moyenne</string>
+    <string name="stats_perfect_days">Jours parfaits</string>
+    <string name="stats_days_with_data">Jours avec données</string>
+    <string name="stats_evolution">Réalisation quotidienne</string>
+    <string name="stats_no_data">Aucune donnée pour cette période</string>
+    <string name="stats_habit_regularity">Régularité par habitude</string>
+    <string name="stats_habit_days">%1$d jours sur %2$d</string>
 </resources>

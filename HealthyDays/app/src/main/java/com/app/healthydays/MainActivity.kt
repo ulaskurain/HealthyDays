@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.nav_home, R.id.nav_history), //, R.id.nav_slideshow
+            setOf(R.id.nav_home, R.id.nav_history, R.id.nav_stats),
             drawerLayout
         )
 
@@ -67,7 +67,8 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.appBarMain.toolbarTitle.text = when (destination.id) {
                 R.id.nav_home,
-                R.id.nav_history -> destination.label
+                R.id.nav_history,
+                R.id.nav_stats -> destination.label
                 else -> ""
             }
         }

@@ -31,4 +31,14 @@
     <color name="icon_background">@color/black</color>
     <color name="category_button_background">@color/white</color>
     <color name="selected_habit">@color/healthy_day_2</color>
+    <color name="stats_range_selected_bg">@color/healthy_day_4</color>
+    <color name="stats_range_selected_text">@color/white</color>
+    <color name="stats_range_unselected_bg">#00000000</color>
+    <color name="stats_range_unselected_text">@color/black</color>
+    <color name="stats_range_stroke">@color/healthy_day_4</color>
+    <color name="stats_chart_line">@color/healthy_day_4</color>
+    <color name="stats_chart_grid">@color/light_gray</color>
+    <color name="stats_chart_text">@color/dark_gray</color>
+    <color name="stats_bar_background">@color/light_gray</color>
+    <color name="stats_bar_fill">@color/healthy_day_4</color>
 </resources>

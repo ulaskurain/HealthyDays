@@ -63,4 +63,15 @@
     <string name="category_hobbies">Zaletasunak eta Aisialdia</string>
     <string name="category_other">Bestelakoak</string>
     <string name="category">Kategoria</string>
+    <string name="menu_stats">Estadistikak</string>
+    <string name="stats_range_7">7 egun</string>
+    <string name="stats_range_30">30 egun</string>
+    <string name="stats_range_all">Guztia</string>
+    <string name="stats_average">Batez besteko betetzea</string>
+    <string name="stats_perfect_days">Egun perfektuak</string>
+    <string name="stats_days_with_data">Datuak dituzten egunak</string>
+    <string name="stats_evolution">Eguneroko betetzea</string>
+    <string name="stats_no_data">Ez dago daturik denboraldi honetan</string>
+    <string name="stats_habit_regularity">Ohituren erregulartasuna</string>
+    <string name="stats_habit_days">%2$d egunetatik %1$d</string>
 </resources>
