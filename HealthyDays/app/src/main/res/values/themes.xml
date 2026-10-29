@@ -21,6 +21,23 @@
         <item name="colorAccent">@color/healthy_day_4</item>
     </style>
 
+    <style name="CustomSwitchTheme">
+        <!-- Changes the active thumb and track color tint -->
+        <item name="colorControlActivated">@color/healthy_day_4</item>
+        <!-- Changes the inactive thumb color -->
+        <item name="colorSwitchThumbNormal">@color/switch_thumb_normal</item>
+    </style>
+
+
+    <style name="HealthyDaysTimePickerTheme"
+        parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="colorAccent">@color/healthy_day_4</item>
+        <item name="android:colorAccent">@color/healthy_day_4</item>
+        <item name="android:textColor">@color/healthy_day_4</item>
+        <item name="colorOnSurface">@color/healthy_day_4</item>
+        <item name="android:colorControlHighlight">#334CAF50</item>
+    </style>
+
 
     <style name="Theme.HealthyDays.NoActionBar">
         <item name="windowActionBar">false</item>

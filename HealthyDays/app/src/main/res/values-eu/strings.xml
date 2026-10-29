@@ -74,5 +74,8 @@
     <string name="stats_no_data">Ez dago daturik denboraldi honetan</string>
     <string name="stats_habit_regularity">Ohituren erregulartasuna</string>
     <string name="stats_habit_days">%2$d egunetatik %1$d</string>
-    <string name="stats_filter">Estadistiken iragazkia</string>
+    <string name="stats_filter_title">Iragazi ohiturak</string>
+    <string name="stats_select_all">Guztiak</string>
+    <string name="stats_select_none">Bat ere ez</string>
+    <string name="stats_filter_showing">%2$d ohituretatik %1$d erakusten</string>
 </resources>

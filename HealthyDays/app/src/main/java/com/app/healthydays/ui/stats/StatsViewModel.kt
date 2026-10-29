@@ -1,6 +1,7 @@
 package com.app.healthydays.ui.stats
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.healthydays.data.database.AppDatabase
@@ -23,10 +24,20 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
     var selectedRange: StatsRange = StatsRange.LAST_7_DAYS
         private set
 
+    /** habitId de los hábitos desactivados. Vacío = todos activos. */
+    var excludedHabitIds: Set<Int> = emptySet() // TEMPORAL para probar: setOf(1)
+        private set
+
     private var loadJob: Job? = null
+
+    private val preferences = application.getSharedPreferences(
+        "habit_order",
+        Context.MODE_PRIVATE
+    )
 
     fun load(range: StatsRange) {
         selectedRange = range
+        val excluded = excludedHabitIds // copia para esta carga
         loadJob?.cancel() // si el usuario cambia de rango rápido, gana el último
         loadJob = viewModelScope.launch(Dispatchers.IO) {
             val today = StatsCalculator.today()
@@ -38,7 +49,25 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
                 habitCompletionDao.getCompletionsFrom(from)
             }
 
-            _result.value = StatsCalculator.calculate(completions, range, today)
+            _result.value = StatsCalculator.calculate(completions, range, today, excluded)
         }
+    }
+
+    /** Orden de categorías definido en Editar hábitos (el mismo que Home). */
+    fun getCategoryOrder(): List<String> {
+        val allCategories = com.app.healthydays.data.entity.HabitCategory.entries.map { it.id }
+
+        val saved = preferences.getString("category_order", null)
+            ?.split(",")
+            ?.filter { it in allCategories }
+            .orEmpty()
+
+        return (saved + allCategories).distinct()
+    }
+
+    /** Guarda el filtro y recalcula con el rango actual. */
+    fun setExcludedHabits(ids: Set<Int>) {
+        excludedHabitIds = ids
+        load(selectedRange)
     }
 }

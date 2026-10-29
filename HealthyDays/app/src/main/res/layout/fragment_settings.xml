@@ -140,7 +140,8 @@
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switchNotifications"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:theme="@style/CustomSwitchTheme"/>
 
             </LinearLayout>
 

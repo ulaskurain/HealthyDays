@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.app.healthydays.R
 import com.app.healthydays.data.dto.HabitStat
+import com.app.healthydays.data.entity.HabitCategory
 import com.app.healthydays.databinding.ItemHabitStatBinding
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -37,6 +38,9 @@ class StatsHabitAdapter(
         val percentage = habit.percentage.roundToInt()
 
         binding.textHabitName.text = habit.name
+        val category = HabitCategory.entries.firstOrNull { it.id == habit.categoryId }
+            ?: HabitCategory.OTHER
+        binding.imageHabitCategory.setImageResource(categoryIcon(category))
         binding.textHabitPercentage.text = String.format(locale, "%d%%", percentage)
         binding.textHabitDays.text = context.getString(
             R.string.stats_habit_days,
@@ -55,6 +59,19 @@ class StatsHabitAdapter(
     }
 
     override fun getItemCount(): Int = habits.size
+
+    private fun categoryIcon(category: HabitCategory): Int =
+        when (category) {
+            HabitCategory.PHYSICAL_HEALTH -> R.drawable.ic_health
+            HabitCategory.NUTRITION -> R.drawable.ic_nutrition
+            HabitCategory.MENTAL_WELLBEING -> R.drawable.ic_mental
+            HabitCategory.LEARNING -> R.drawable.ic_learning
+            HabitCategory.SOCIAL -> R.drawable.ic_social
+            HabitCategory.PRODUCTIVITY -> R.drawable.ic_work
+            HabitCategory.HOME -> R.drawable.ic_home
+            HabitCategory.HOBBIES -> R.drawable.ic_hobbies
+            HabitCategory.OTHER -> R.drawable.ic_others
+        }
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateData(newHabits: List<HabitStat>) {

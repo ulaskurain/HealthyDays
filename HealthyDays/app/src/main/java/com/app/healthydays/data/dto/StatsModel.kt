@@ -18,7 +18,8 @@ data class HabitStat(
     val habitId: Int,
     val name: String,      // último nombre conocido
     val plannedDays: Int,
-    val completedDays: Int
+    val completedDays: Int,
+    val categoryId: String = "OTHER"
 ) {
     val percentage: Float get() =
         if (plannedDays > 0) completedDays * 100f / plannedDays else 0f
@@ -33,6 +34,16 @@ data class StatsSummary(
 data class StatsResult(
     val range: StatsRange,
     val days: List<DayStat>,        // todos los días del rango, también los sin datos
-    val habits: List<HabitStat>,
-    val summary: StatsSummary
+    val habits: List<HabitStat>,    // solo los hábitos activos
+    val summary: StatsSummary,
+    val availableHabits: List<FilterableHabit> = emptyList(), // todos, activos o no
+    val activeHabitCount: Int = 0
+)
+
+/** Entrada del filtro: agrupa los habitId que comparten nombre y categoría. */
+data class FilterableHabit(
+    val habitIds: List<Int>,
+    val name: String,       // último nombre conocido
+    val categoryId: String, // id de HabitCategory (por ejemplo "NUTRITION")
+    val sortOrder: Int      // orden dentro de la categoría, como en Home
 )

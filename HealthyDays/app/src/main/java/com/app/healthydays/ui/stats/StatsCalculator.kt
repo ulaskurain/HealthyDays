@@ -1,6 +1,7 @@
 package com.app.healthydays.ui.stats
 
 import com.app.healthydays.data.dto.DayStat
+import com.app.healthydays.data.dto.FilterableHabit
 import com.app.healthydays.data.dto.HabitStat
 import com.app.healthydays.data.dto.StatsRange
 import com.app.healthydays.data.dto.StatsResult
@@ -28,13 +29,41 @@ object StatsCalculator {
     fun calculate(
         completions: List<HabitCompletion>,
         range: StatsRange,
-        today: String
+        today: String,
+        excludedHabitIds: Set<Int> = emptySet()
     ): StatsResult {
+        // El inicio de "Todo" se calcula con todos los datos, sin filtrar,
+        // para que el rango no cambie al activar o desactivar hábitos.
         val start = fixedRangeStart(range, today)
             ?: completions.map { it.date }.filter { it <= today }.minOrNull()
             ?: today
 
-        val inRange = completions.filter { it.date in start..today }
+        val inRangeAll = completions.filter { it.date in start..today }
+
+        // Entradas del filtro: se agrupan por categoría y nombre, así un hábito
+        // borrado y recreado muchas veces sale una sola vez.
+        val availableHabits = inRangeAll
+            .groupBy { it.habitId }
+            .map { (habitId, rows) -> habitId to rows.maxByOrNull { it.date }!! }
+            .groupBy { (_, latest) ->
+                latest.categoryId to latest.habitName.trim().lowercase()
+            }
+            .map { (_, entries) ->
+                val newest = entries.maxByOrNull { it.second.date }!!.second
+                FilterableHabit(
+                    habitIds = entries.map { it.first }.sorted(),
+                    name = newest.habitName,
+                    categoryId = newest.categoryId,
+                    sortOrder = newest.sortOrder
+                )
+            }
+            .sortedWith(
+                compareBy<FilterableHabit> { it.sortOrder }
+                    .thenBy { it.name.lowercase() }
+            )
+
+        // A partir de aquí todo sale de las filas de los hábitos activos.
+        val inRange = inRangeAll.filter { it.habitId !in excludedHabitIds }
         val rowsByDate = inRange.groupBy { it.date }
 
         // Un DayStat por cada día del rango. Sin filas => planned = 0 => sin datos.
@@ -60,11 +89,13 @@ object StatsCalculator {
         val habits = inRange
             .groupBy { it.habitId }
             .map { (habitId, rows) ->
+                val latest = rows.maxByOrNull { it.date }
                 HabitStat(
                     habitId = habitId,
-                    name = rows.maxByOrNull { it.date }?.habitName ?: "",
+                    name = latest?.habitName ?: "",
                     plannedDays = rows.size,
-                    completedDays = rows.count { it.isCompleted }
+                    completedDays = rows.count { it.isCompleted },
+                    categoryId = latest?.categoryId ?: "OTHER"
                 )
             }
             .sortedWith(
@@ -72,7 +103,16 @@ object StatsCalculator {
                     .thenBy { it.name.lowercase() }
             )
 
-        return StatsResult(range, days, habits, summary)
+        return StatsResult(
+            range = range,
+            days = days,
+            habits = habits,
+            summary = summary,
+            availableHabits = availableHabits,
+            activeHabitCount = availableHabits.count { habit ->
+                habit.habitIds.any { it !in excludedHabitIds }
+            }
+        )
     }
 
     // ---- Fechas ----

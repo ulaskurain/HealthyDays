@@ -74,5 +74,8 @@
     <string name="stats_no_data">Aucune donnée pour cette période</string>
     <string name="stats_habit_regularity">Régularité par habitude</string>
     <string name="stats_habit_days">%1$d jours sur %2$d</string>
-    <string name="stats_filter">Filtre de statistiques</string>
+    <string name="stats_filter_title">Filtrer les habitudes</string>
+    <string name="stats_select_all">Toutes</string>
+    <string name="stats_select_none">Aucune</string>
+    <string name="stats_filter_showing">Affichage de %1$d habitudes sur %2$d</string>
 </resources>

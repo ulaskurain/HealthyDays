@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.net.Uri
 import android.provider.Settings
+import android.view.ContextThemeWrapper
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.app.healthydays.notifications.NotificationHelper
@@ -253,7 +254,10 @@ class SettingsFragment : Fragment() {
         val currentMinute = prefs.getInt("notification_minute", 0)
 
         TimePickerDialog(
-            requireContext(),
+            ContextThemeWrapper(
+                requireContext(),
+                R.style.HealthyDaysTimePickerTheme
+            ),
             { _, hourOfDay, minute ->
                 enableNotifications(hourOfDay, minute)
             },
@@ -266,6 +270,16 @@ class SettingsFragment : Fragment() {
             }
 
             show()
+
+            getButton(AlertDialog.BUTTON_POSITIVE)
+                .setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.healthy_day_4)
+                )
+
+            getButton(AlertDialog.BUTTON_NEGATIVE)
+                .setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.healthy_day_4)
+                )
         }
     }
 
@@ -348,11 +362,7 @@ class SettingsFragment : Fragment() {
     }
 
     private fun showAppearanceDialog() {
-        val prefs = requireContext()
-            .getSharedPreferences(
-                "settings",
-                android.content.Context.MODE_PRIVATE
-            )
+        val prefs = requireContext().getSharedPreferences("settings", Context.MODE_PRIVATE)
 
         val options = arrayOf(
             getString(R.string.system_default),

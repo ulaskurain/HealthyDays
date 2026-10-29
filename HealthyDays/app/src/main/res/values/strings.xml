@@ -76,6 +76,9 @@
     <string name="stats_no_data">No data for this period</string>
     <string name="stats_habit_regularity">Habit consistency</string>
     <string name="stats_habit_days">%1$d of %2$d days</string>
-    <string name="stats_filter">Stats filter</string>
+    <string name="stats_filter_title">Filter habits</string>
+    <string name="stats_select_all">All</string>
+    <string name="stats_select_none">None</string>
+    <string name="stats_filter_showing">Showing %1$d of %2$d habits</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

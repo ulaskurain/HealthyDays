@@ -21,6 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="false"
+            android:buttonTint="@color/healthy_day_4"
             android:textColor="?android:attr/textColorPrimary" />
 
         <TextView
