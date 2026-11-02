@@ -43,6 +43,15 @@ interface HabitCompletionDao {
     suspend fun getHabitCompletionsByDate(date: String): List<HabitItem>
 
     @Query("""
+        SELECT habitId
+        FROM habit_completion
+        WHERE habitName = :name AND categoryId = :categoryId
+        ORDER BY date DESC
+        LIMIT 1
+    """)
+    suspend fun getHistoricalHabitId(name: String, categoryId: String): Int?
+
+    @Query("""
         DELETE FROM habit_completion
         WHERE habitId = :habitId
         AND date >= :today

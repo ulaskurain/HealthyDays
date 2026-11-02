@@ -32,6 +32,13 @@ interface HabitDao {
     suspend fun getAllHabits(): List<Habit>
 
     @Query("""
+        SELECT * FROM habit
+        WHERE name = :name AND categoryId = :categoryId
+        LIMIT 1
+    """)
+    suspend fun getHabitByNameAndCategory(name: String, categoryId: String): Habit?
+
+    @Query("""
         UPDATE habit
         SET sortOrder = :sortOrder
         WHERE habitId = :habitId

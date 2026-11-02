@@ -5,7 +5,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.room.withTransaction
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.app.healthydays.data.dao.DayDao
 import com.app.healthydays.data.dao.HabitCompletionDao
 import com.app.healthydays.data.dao.HabitDao
@@ -16,7 +18,7 @@ import com.app.healthydays.data.entity.HabitCompletion
 
 @Database(
     entities = [Habit::class, Day::class, HabitCompletion::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -30,6 +32,18 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP INDEX IF EXISTS index_habit_name")
+
+                db.execSQL("""
+                    CREATE UNIQUE INDEX IF NOT EXISTS
+                    index_habit_name_categoryId
+                    ON habit(name, categoryId)
+                """)
+            }
+        }
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -37,6 +51,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "healthy_days_db"
                 )
+                    .addMigrations(MIGRATION_2_3)
                     .fallbackToDestructiveMigration()
                     .build()
 
@@ -49,12 +64,13 @@ abstract class AppDatabase : RoomDatabase() {
     suspend fun importData(data: ExportData) {
         withTransaction {
             val currentHabits = habitDao().getAllHabits()
-            val habitIdMap = mutableMapOf<String, Int>()
+            val habitIdMap = mutableMapOf<Pair<String, String>, Int>()
 
             // Restaurar los hábitos por nombre, incluyendo categoría y orden.
             for (backupHabit in data.habits) {
                 val existingHabit = currentHabits.firstOrNull {
-                    it.name == backupHabit.name
+                    it.name == backupHabit.name &&
+                    it.categoryId == backupHabit.categoryId
                 }
 
                 if (existingHabit != null) {
@@ -63,14 +79,14 @@ abstract class AppDatabase : RoomDatabase() {
                     )
 
                     habitDao().updateHabit(restoredHabit)
-                    habitIdMap[backupHabit.name] = existingHabit.habitId
+                    habitIdMap[backupHabit.name to backupHabit.categoryId] = existingHabit.habitId
                 } else {
                     val newId = habitDao().insertHabit(
                         backupHabit.copy(habitId = 0)
                     )
 
                     if (newId != -1L) {
-                        habitIdMap[backupHabit.name] = newId.toInt()
+                        habitIdMap[backupHabit.name to backupHabit.categoryId] = newId.toInt()
                     }
                 }
             }
@@ -86,7 +102,8 @@ abstract class AppDatabase : RoomDatabase() {
 
             // Restaurar finalizaciones, incluidas las de hábitos eliminados.
             for (backupCompletion in data.completions) {
-                val currentHabitId = habitIdMap[backupCompletion.habitName]
+                val currentHabitId = habitIdMap[
+                    backupCompletion.habitName to backupCompletion.categoryId]
 
                 val restoredCompletion = if (currentHabitId != null) {
                     backupCompletion.copy(habitId = currentHabitId)

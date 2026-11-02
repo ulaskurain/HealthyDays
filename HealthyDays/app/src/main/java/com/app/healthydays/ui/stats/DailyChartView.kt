@@ -104,11 +104,17 @@ class DailyChartView @JvmOverloads constructor(
             }
 
             override fun onSingleTapUp(e: MotionEvent): Boolean {
-                // Tocar en cualquier parte descarta el cuadrito.
-                if (selectedIndex != -1) {
+                val index = pointNear(e.x, e.y, dp(32f))
+
+                if (index != -1) {
+                    // Mostrar los datos del día seleccionado.
+                    selectedIndex = index
+                } else {
+                    // Si se toca fuera de un punto, ocultar el cuadrito.
                     selectedIndex = -1
-                    invalidate()
                 }
+
+                invalidate()
                 return true
             }
 
@@ -273,8 +279,10 @@ class DailyChartView @JvmOverloads constructor(
 
         // Eje Y fijo: líneas de referencia y etiquetas
         textPaint.textAlign = Paint.Align.RIGHT
-        for (value in intArrayOf(0, 50, 100)) {
+        for (value in intArrayOf(0, 25, 50, 75, 100)) {
             val y = plotBottom - chartHeight * value / 100f
+            val major = value % 50 == 0
+            gridPaint.alpha = if (major) 255 else 125
             canvas.drawLine(plotLeft, y, plotRight, y, gridPaint)
             canvas.drawText(
                 "$value%",
@@ -283,19 +291,43 @@ class DailyChartView @JvmOverloads constructor(
                 textPaint
             )
         }
+        gridPaint.alpha = 255
 
         val n = days.size
         if (n == 0) return
 
-        // Etiquetas del eje X, contando desde el día más reciente
+        // Etiquetas del eje X: mostrar también el primer y último día visibles.
         val labelY = plotBottom + dp(18f)
         val step = labelStep(min(n, WINDOW_DAYS))
         textPaint.textAlign = Paint.Align.CENTER
+
+        val isAtEnd = scrollOffset >= maxScroll - dp(2f)
+
+        var firstVisibleIndex = -1
+        var lastVisibleIndex = -1
+
         for (i in 0 until n) {
-            if ((n - 1 - i) % step != 0) continue
+            val x = xFor(i)
+            if (x in plotLeft..plotRight) {
+                if (firstVisibleIndex == -1) firstVisibleIndex = i
+                lastVisibleIndex = i
+            }
+        }
+
+        for (i in 0 until n) {
             val x = xFor(i)
             if (x < plotLeft || x > plotRight) continue
-            canvas.drawText(shortDate(days[i].date), x, labelY, textPaint)
+
+            val isFirst = i == firstVisibleIndex
+            val isLast = i == lastVisibleIndex
+            val followsStep = (n - 1 - i) % step == 0
+
+            // Solo forzar la primera etiqueta cuando estamos al final del gráfico.
+            val showFirst = isFirst && isAtEnd
+
+            if (showFirst || isLast || followsStep) {
+                canvas.drawText(shortDate(days[i].date), x, labelY, textPaint)
+            }
         }
 
         // Línea y puntos, recortados al área de la gráfica

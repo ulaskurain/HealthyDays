@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.withTransaction
 import com.app.healthydays.data.database.AppDatabase
 import com.app.healthydays.data.dto.HabitItem
 import com.app.healthydays.data.entity.Day
@@ -21,9 +22,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
+class HomeViewModel(
+    application: Application,
+    private val database: AppDatabase = AppDatabase.getDatabase(application)
+) : AndroidViewModel(application) {
 
-    private val database = AppDatabase.getDatabase(application)
     private val habitDao = database.habitDao()
     private val habitCompletionDao = database.habitCompletionDao()
     private val dayDao = database.dayDao()
@@ -108,32 +111,49 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     @RequiresApi(Build.VERSION_CODES.O)
     fun addHabit(name: String, categoryId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val existingHabit = habitDao.getHabitByName(name)
+            val existingHabit = habitDao.getHabitByNameAndCategory(name, categoryId)
             if (existingHabit != null) return@launch
 
             val categoryHabits = habitDao.getAllHabits()
                 .filter { it.categoryId == categoryId }
 
-            val habitId = habitDao.insertHabit(
+            val sortOrder = categoryHabits.size
+
+            val historicalHabitId = habitCompletionDao.getHistoricalHabitId(name, categoryId)
+
+            val habit = if (historicalHabitId != null) {
                 Habit(
+                    habitId = historicalHabitId,
                     name = name,
                     categoryId = categoryId,
-                    sortOrder = categoryHabits.size
-                )
-            )
-
-            if (habitId != -1L) {
-                habitCompletionDao.insertOrUpdateCompletion(
-                    HabitCompletion(
-                        habitId = habitId.toInt(),
-                        habitName = name,
-                        date = LocalDate.now().toString(),
-                        isCompleted = false,
-                        categoryId = categoryId,
-                        sortOrder = categoryHabits.size
-                    )
+                    sortOrder = sortOrder
                 )
             }
+            else {
+                Habit(name = name, categoryId = categoryId, sortOrder = sortOrder)
+            }
+
+            val habitId = if (historicalHabitId != null) {
+                val insertedId = habitDao.insertHabit(habit)
+                if (insertedId == -1L) return@launch
+                historicalHabitId
+            }
+            else {
+                val insertedId = habitDao.insertHabit(habit)
+                if (insertedId == -1L) return@launch
+                insertedId.toInt()
+            }
+
+            habitCompletionDao.insertOrUpdateCompletion(
+                HabitCompletion(
+                    habitId = habitId,
+                    habitName = name,
+                    date = LocalDate.now().toString(),
+                    isCompleted = false,
+                    categoryId = categoryId,
+                    sortOrder = sortOrder
+                )
+            )
         }
     }
 
@@ -146,18 +166,20 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             val today = LocalDate.now().toString()
 
-            orderedHabits.forEach { habit ->
-                habitDao.updateHabitSortOrder(
-                    habitId = habit.habitId,
-                    sortOrder = habit.sortOrder
-                )
+            database.withTransaction {
+                orderedHabits.forEach { habit ->
+                    habitDao.updateHabitSortOrder(
+                        habitId = habit.habitId,
+                        sortOrder = habit.sortOrder
+                    )
 
-                habitCompletionDao.updateTodayHabitOrder(
-                    habitId = habit.habitId,
-                    sortOrder = habit.sortOrder,
-                    categoryId = habit.categoryId,
-                    today = today
-                )
+                    habitCompletionDao.updateTodayHabitOrder(
+                        habitId = habit.habitId,
+                        sortOrder = habit.sortOrder,
+                        categoryId = habit.categoryId,
+                        today = today
+                    )
+                }
             }
         }
     }

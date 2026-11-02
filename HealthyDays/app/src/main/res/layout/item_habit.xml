@@ -10,11 +10,14 @@
     app:cardUseCompatPadding="false">
 
     <LinearLayout
+        android:id="@+id/habitRow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:background="@color/habit_item_background">
+        android:background="@color/habit_item_background"
+        android:clickable="true"
+        android:focusable="true">
 
         <CheckBox
             android:id="@+id/checkboxCompleted"

@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_stats -> destination.label
                 else -> ""
             }
+            updateSettingsButtonVisibility()
         }
         navView.setupWithNavController(navController)
 
@@ -104,11 +105,20 @@ class MainActivity : AppCompatActivity() {
                 val navController = findNavController(
                     R.id.nav_host_fragment_content_main
                 )
+
                 navController.navigate(R.id.settingsFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun updateSettingsButtonVisibility() {
+        val menuItem = binding.appBarMain.toolbar.menu.findItem(R.id.action_settings)
+
+        menuItem?.isVisible =
+            findNavController(R.id.nav_host_fragment_content_main)
+                .currentDestination?.id != R.id.settingsFragment
     }
 
     private fun applySavedAppearance() {

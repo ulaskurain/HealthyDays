@@ -44,17 +44,14 @@ object StatsCalculator {
         // borrado y recreado muchas veces sale una sola vez.
         val availableHabits = inRangeAll
             .groupBy { it.habitId }
-            .map { (habitId, rows) -> habitId to rows.maxByOrNull { it.date }!! }
-            .groupBy { (_, latest) ->
-                latest.categoryId to latest.habitName.trim().lowercase()
-            }
-            .map { (_, entries) ->
-                val newest = entries.maxByOrNull { it.second.date }!!.second
+            .map { (habitId, rows) ->
+                val latest = rows.maxByOrNull { it.date }!!
+
                 FilterableHabit(
-                    habitIds = entries.map { it.first }.sorted(),
-                    name = newest.habitName,
-                    categoryId = newest.categoryId,
-                    sortOrder = newest.sortOrder
+                    habitIds = listOf(habitId),
+                    name = latest.habitName,
+                    categoryId = latest.categoryId,
+                    sortOrder = latest.sortOrder
                 )
             }
             .sortedWith(

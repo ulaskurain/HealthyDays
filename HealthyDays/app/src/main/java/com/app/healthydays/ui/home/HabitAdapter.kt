@@ -43,6 +43,7 @@ class HabitAdapter(
     }
 
     inner class HabitViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val habitRow: View = view.findViewById(R.id.habitRow)
         val checkBox: CheckBox = view.findViewById(R.id.checkboxCompleted)
         val textHabitName: TextView = view.findViewById(R.id.textHabitName)
     }
@@ -108,6 +109,10 @@ class HabitAdapter(
 
                     checkBox.setOnCheckedChangeListener { _, isChecked ->
                         onCheckChanged(habit.habitId, isChecked)
+                    }
+
+                    habitRow.setOnClickListener {
+                        checkBox.isChecked = !checkBox.isChecked
                     }
                 }
             }

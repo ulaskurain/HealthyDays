@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "habit",
     indices = [
-        Index(value = ["name"], unique = true)
+        Index(value = ["name", "categoryId"], unique = true)
     ]
 )
 data class Habit(

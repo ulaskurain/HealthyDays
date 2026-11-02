@@ -36,7 +36,8 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
+        val factory = HomeViewModelFactory(requireActivity().application)
+        homeViewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 

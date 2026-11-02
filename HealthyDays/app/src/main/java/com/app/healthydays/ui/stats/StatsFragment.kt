@@ -285,6 +285,7 @@ class StatsFragment : Fragment() {
             .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
