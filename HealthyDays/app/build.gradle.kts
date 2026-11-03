@@ -37,6 +37,12 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true   // Robolectric necesita los recursos (R, layouts, strings)
+            isReturnDefaultValues = true
+        }
+    }
 }
 
 dependencies {
@@ -50,18 +56,29 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.junit.ktx)
     implementation(libs.androidx.espresso.contrib)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.prolificinteractive.material.calendarview)
     implementation(libs.gson)
+    ksp(libs.androidx.room.compiler)
+
+    // Tests unitarios (src/test)
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.core.ktx)            // androidx.test:core-ktx
+    testImplementation(libs.androidx.junit)      // androidx.test.ext:junit
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.core.testing)
+
+    // Tests instrumentados (src/androidTest)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.junit.ktx)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.espresso.contrib)
     androidTestImplementation(libs.androidx.room.testing)
     androidTestImplementation(libs.androidx.core.testing)
-    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }
