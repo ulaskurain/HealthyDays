@@ -244,13 +244,20 @@ class SettingsScreenTest {
     @Test
     fun about_showsTitleMessageAndVersion() {
         openSettings()
+
         onView(withId(R.id.optionAbout)).perform(scrollTo(), click())
 
-        onView(withText("About Healthy Days")).inRoot(isDialog()).check(matches(isDisplayed()))
-        onView(withText(containsString("Healthy Days was created"))).inRoot(isDialog())
+        onView(withText("About Healthy Days"))
+            .inRoot(isDialog())
             .check(matches(isDisplayed()))
+
+        onView(withText(containsString("Healthy Days was created")))
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+
         dialogOk()
 
-        onView(withId(R.id.optionAbout)).check(matches(isDisplayed()))
+        // Comprobar que seguimos en Settings tras cerrar el diálogo
+        onView(withId(R.id.optionAbout)).perform(scrollTo()).check(matches(isDisplayed()))
     }
 }

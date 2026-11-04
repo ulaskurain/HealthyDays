@@ -43,17 +43,13 @@ class DailyNotificationReceiver : BroadcastReceiver() {
         val localizedContext = context.createConfigurationContext(configuration)
 
         // Intent para abrir la aplicación al pulsar la notificación
-        val openAppIntent = Intent(
-            context,
-            MainActivity::class.java
-        )
+        val openAppIntent = Intent(context, MainActivity::class.java)
 
         val pendingIntent = PendingIntent.getActivity(
             context,
             100,
             openAppIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or
-                    PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         // Construimos la notificación
@@ -67,8 +63,6 @@ class DailyNotificationReceiver : BroadcastReceiver() {
             .build()
 
         // Mostramos la notificación
-        NotificationManagerCompat
-            .from(context)
-            .notify(1001, notification)
+        NotificationManagerCompat.from(context).notify(1001, notification)
     }
 }

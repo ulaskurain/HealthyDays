@@ -4,7 +4,7 @@ import android.view.View
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.hasSibling
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -14,6 +14,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.espresso.matcher.ViewMatchers.Visibility
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.app.healthydays.AppTestHelper
+import com.app.healthydays.AppTestHelper.calendarDay
 import com.app.healthydays.AppTestHelper.eventually
 import com.app.healthydays.AppTestHelper.today
 import com.app.healthydays.AppTestHelper.waitUntil
@@ -24,6 +25,7 @@ import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import org.junit.After
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -78,11 +80,13 @@ class HistoryScreenTest {
             Habit(name = "Leer", categoryId = "LEARNING")
         )
 
+        // La pantalla es un NestedScrollView: bajo el calendario y la tarjeta de rating,
+        // las últimas filas pueden quedar fuera de pantalla, así que se hace scroll hasta cada una.
         eventually {
-            onView(withText("Physical health")).check(matches(isDisplayed()))
-            onView(withText("Correr")).check(matches(isDisplayed()))
-            onView(withText("Learning & Personal growth")).check(matches(isDisplayed()))
-            onView(withText("Leer")).check(matches(isDisplayed()))
+            assertShownAfterScrolling("Physical health")
+            assertShownAfterScrolling("Correr")
+            assertShownAfterScrolling("Learning & Personal growth")
+            assertShownAfterScrolling("Leer")
             onView(withId(R.id.noHabitsMessage)).check(matches(withEffectiveVisibility(Visibility.GONE)))
         }
     }
@@ -101,49 +105,65 @@ class HistoryScreenTest {
         AppTestHelper.goToDrawerItem(R.id.nav_history)
 
         eventually { onView(withId(R.id.textRating)).check(matches(withText("50"))) }
-        onView(withText("Correr")).check(matches(isDisplayed()))
-        onView(withText("Nadar")).check(matches(isDisplayed()))
+        eventually {
+            assertShownAfterScrolling("Correr")
+            assertShownAfterScrolling("Nadar")
+        }
     }
 
     @Test
     fun clickingCategoryHeader_collapsesItsHabits() {
         launchAndOpenHistory(Habit(name = "Correr", categoryId = "PHYSICAL_HEALTH"))
-        eventually { onView(withText("Correr")).check(matches(isDisplayed())) }
+        eventually { assertShownAfterScrolling("Correr") }
 
-        onView(withText("Physical health")).perform(click())
-        eventually { onView(withText("Correr")).check(doesNotExist()) }
+        onView(withText("Physical health")).perform(scrollTo(), click())
+        eventually { assertNotShown("Correr") }
 
-        onView(withText("Physical health")).perform(click())
-        eventually { onView(withText("Correr")).check(matches(isDisplayed())) }
+        onView(withText("Physical health")).perform(scrollTo(), click())
+        eventually { assertShownAfterScrolling("Correr") }
     }
 
     @Test
     fun selectingAnotherDay_showsEmptyStateAndDash() {
         launchAndOpenHistory(Habit(name = "Correr", categoryId = "PHYSICAL_HEALTH"))
-        eventually { onView(withText("Correr")).check(matches(isDisplayed())) }
+        eventually { assertShownAfterScrolling("Correr") }
 
-        // Elegimos un día del mes distinto de hoy (el calendario solo muestra los del mes actual).
-        val dayToClick = if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) != 1) "1" else "2"
-        onView(allOf(withText(dayToClick), isDisplayed())).perform(click())
+        onView(calendarDay(otherDayOfMonth())).perform(click())
 
         eventually {
-            onView(withId(R.id.noHabitsMessage)).check(matches(isDisplayed()))
+            onView(withId(R.id.noHabitsMessage)).perform(scrollTo()).check(matches(isDisplayed()))
             onView(withId(R.id.textRating)).check(matches(withText("-")))
+            // La lista queda en GONE pero la fila antigua puede seguir en la jerarquía: lo que importa es que no se vea.
+            assertNotShown("Correr")
         }
-        onView(withText("Correr")).check(doesNotExist())
     }
 
     @Test
     fun returningToToday_showsTodaysHabitsAgain() {
         launchAndOpenHistory(Habit(name = "Correr", categoryId = "PHYSICAL_HEALTH"))
-        eventually { onView(withText("Correr")).check(matches(isDisplayed())) }
+        eventually { assertShownAfterScrolling("Correr") }
 
-        val today = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-        val other = if (today != 1) "1" else "2"
-        onView(allOf(withText(other), isDisplayed())).perform(click())
-        eventually { onView(withId(R.id.noHabitsMessage)).check(matches(isDisplayed())) }
+        onView(calendarDay(otherDayOfMonth())).perform(click())
+        eventually { onView(withId(R.id.noHabitsMessage)).perform(scrollTo()).check(matches(isDisplayed())) }
 
-        onView(allOf(withText(today.toString()), isDisplayed())).perform(click())
-        eventually { onView(withText("Correr")).check(matches(isDisplayed())) }
+        onView(calendarDay(Calendar.getInstance().get(Calendar.DAY_OF_MONTH))).perform(click())
+        eventually { assertShownAfterScrolling("Correr") }
+    }
+
+    // ---------- Utilidades ----------
+
+    /** Día 1 del mes, o el 2 si hoy es día 1 (siempre existe en la página actual del calendario). */
+    private fun otherDayOfMonth(): Int =
+        if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) != 1) 1 else 2
+
+    private fun assertShownAfterScrolling(text: String) {
+        onView(withText(text)).perform(scrollTo()).check(matches(isDisplayed()))
+    }
+
+    /** Pasa si la vista no existe o existe pero no es visible (p. ej. dentro de un RecyclerView en GONE). */
+    private fun assertNotShown(text: String) {
+        onView(withText(text)).check { view, _ ->
+            if (view != null) assertFalse("'$text' no debería verse", view.isShown)
+        }
     }
 }

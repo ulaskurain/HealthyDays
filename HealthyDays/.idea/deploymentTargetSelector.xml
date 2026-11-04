@@ -8,13 +8,16 @@
       <SelectionState runConfigName="Tests in 'com.app.healthydays'">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="HistoryScreenTest">
+      <SelectionState runConfigName="SettingsScreenTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="todayIsSelectedAndShowsItsHabitsGroupedByCategory()">
+      <SelectionState runConfigName="about_showsTitleMessageAndVersion()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="selectingAnotherDay_showsEmptyStateAndDash()">
+      <SelectionState runConfigName="showsCurrentValues_englishAndSystemDefault()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="returningToToday_showsTodaysHabitsAgain()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

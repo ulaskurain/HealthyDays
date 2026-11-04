@@ -1,6 +1,11 @@
 package com.app.healthydays
 
 import android.content.Context
+import android.view.View
+import android.widget.TextView
+import org.hamcrest.Description
+import org.hamcrest.Matcher
+import org.hamcrest.TypeSafeMatcher
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -64,6 +69,25 @@ object AppTestHelper {
         while (!condition()) {
             if (System.currentTimeMillis() > end) throw AssertionError(message)
             Thread.sleep(50)
+        }
+    }
+
+    /**
+     * Celda de un día del calendario (MaterialCalendarView) que pertenece a la página del mes ACTUAL.
+     * MaterialCalendarView mantiene en la jerarquía las páginas de los meses vecinos, así que buscar
+     * solo por texto ("3") devuelve varias celdas y Espresso lanza AmbiguousViewMatcherException.
+     * La página visible es aquella cuya posición izquierda coincide con el scroll del ViewPager.
+     */
+    fun calendarDay(day: Int): Matcher<View> = object : TypeSafeMatcher<View>() {
+        override fun describeTo(description: Description) {
+            description.appendText("celda del día $day en la página actual del calendario")
+        }
+
+        override fun matchesSafely(view: View): Boolean {
+            if (view !is TextView || view.text.toString() != day.toString() || !view.isShown) return false
+            val page = view.parent as? View ?: return false
+            val pager = page.parent as? View ?: return false
+            return page.left == pager.scrollX
         }
     }
 

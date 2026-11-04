@@ -8,10 +8,15 @@ import com.app.healthydays.data.database.AppDatabase
 import com.app.healthydays.data.entity.Day
 import com.app.healthydays.data.entity.Habit
 import com.app.healthydays.data.entity.HabitCompletion
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -47,12 +52,27 @@ class HomeViewModelTest {
 
     @After
     fun tearDown() {
+        waitForViewModelWork()
         database.close()
 
         application.getSharedPreferences(
             "habit_order",
             Application.MODE_PRIVATE
         ).edit().clear().commit()
+    }
+
+    /**
+     * Los métodos del ViewModel (deleteHabit, addHabit...) lanzan corrutinas en Dispatchers.IO y
+     * siguen trabajando DESPUÉS de lo que el test comprueba (p. ej. deleteHabit aún lee y reordena
+     * los hábitos restantes). Si el test acaba y se cierra la base de datos antes, esa corrutina
+     * lanza "connection pool has been closed" y el fallo se atribuye al test siguiente.
+     * Se espera a que terminen las tareas; las que recogen un Flow indefinidamente
+     * (observeHabits, getAllHabits) nunca acaban, por eso hay un tiempo máximo y luego se cancelan.
+     */
+    private fun waitForViewModelWork() = runBlocking {
+        val job = viewModel.viewModelScope.coroutineContext[Job] ?: return@runBlocking
+        withTimeoutOrNull(1500) { job.children.toList().joinAll() }
+        job.cancelChildren()
     }
 
     private suspend fun waitUntil(
@@ -143,8 +163,12 @@ class HomeViewModelTest {
         viewModel.addHabit("Leer", "LEARNING")
 
         waitUntil {
-            database.habitDao()
-                .getHabitByNameAndCategory("Leer", "LEARNING") != null
+            val created = database.habitDao()
+                .getHabitByNameAndCategory("Leer", "LEARNING")
+            // addHabit inserta primero el hábito y después su finalización de hoy:
+            // hay que esperar a las dos cosas o el test puede leer la finalización antes de que exista.
+            created != null &&
+                database.habitCompletionDao().getCompletion(created.habitId, today) != null
         }
 
         val habit = database.habitDao()

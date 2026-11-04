@@ -13,7 +13,7 @@ object NotificationHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Daily remainders",
+                "Daily reminders",
                 NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
                 description = "Reminders to review your daily habits"
