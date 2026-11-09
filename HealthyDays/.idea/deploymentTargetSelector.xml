@@ -8,9 +8,6 @@
       <SelectionState runConfigName="Tests in 'com.app.healthydays'">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="SettingsScreenTest">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="about_showsTitleMessageAndVersion()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

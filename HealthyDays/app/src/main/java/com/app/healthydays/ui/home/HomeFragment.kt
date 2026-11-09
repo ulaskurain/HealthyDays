@@ -25,9 +25,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var habitAdapter: HabitAdapter
-
     private lateinit var dailyBinding: ItemRatingBinding
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
@@ -41,7 +39,7 @@ class HomeFragment : Fragment() {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        // Binding del include del rating
+        // Binding of the include of the rating
         dailyBinding = ItemRatingBinding.bind(binding.dailyRating.root)
 
         // RecyclerView
@@ -66,25 +64,24 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val today = LocalDate.now().toString()
 
-        // Primero preparamos el día
+        // Prepare the day
         homeViewModel.initializeDay(today)
         habitAdapter.updateCategoryOrder(homeViewModel.getCategoryOrder())
 
-        // Después observamos los hábitos del día
+        // Observe the habits of the day
         viewLifecycleOwner.lifecycleScope.launch {
             homeViewModel.observeHabits(today).collectLatest { habits ->
-                // Actualizar RecyclerView
+                // Update RecyclerView
                 habitAdapter.updateData(habits)
 
-                // Calcular rating
+                // Calculate rating
                 val completed = habits.count { it.isCompleted }
-                val total =habits.size
+                val total = habits.size
                 val percentage =
                     if (total > 0) {
                         (completed * 100) / total
@@ -92,13 +89,11 @@ class HomeFragment : Fragment() {
                         0
                     }
 
-
-                // Actualizar porcentaje
+                // Update percentages
                 dailyBinding.textRating.text = "$percentage%"
                 homeViewModel.updateDailyRating(percentage)
 
-
-                // Actualizar emoji y color
+                // Update emoji and colour
                 when (percentage) {
                     in 0..49 -> {
                         dailyBinding.imageEmoji.setImageResource(R.drawable.sad_face)
@@ -128,7 +123,6 @@ class HomeFragment : Fragment() {
             }
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

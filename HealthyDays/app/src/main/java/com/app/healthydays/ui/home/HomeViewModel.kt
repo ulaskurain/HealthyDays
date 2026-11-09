@@ -38,11 +38,7 @@ class HomeViewModel(
     fun observeHabits(date: String): StateFlow<List<HabitItem>> {
         return habitCompletionDao
             .getHabitsWithCompletionByDateFlow(date)
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Lazily,
-                emptyList()
-            )
+            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -51,12 +47,7 @@ class HomeViewModel(
             val day = dayDao.getDayByDate(date)
 
             if (day == null) {
-                dayDao.insertOrUpdateDay(
-                    Day(
-                        date = date,
-                        rating = 0
-                    )
-                )
+                dayDao.insertOrUpdateDay(Day(date = date, rating = 0))
             }
 
             val habits = habitDao.getAllHabits()
@@ -101,11 +92,7 @@ class HomeViewModel(
     fun getAllHabits(): StateFlow<List<Habit>> {
         return habitDao
             .getAllHabitsFlow()
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Lazily,
-                emptyList()
-            )
+            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -158,8 +145,8 @@ class HomeViewModel(
     }
 
     /**
-     * Guarda el nuevo orden de los hábitos de una categoría.
-     * La lista recibida debe contener los hábitos en el orden deseado.
+     * Save the new order of habits of a category.
+     * The list received must contain the habits in the desired order.
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun reorderHabits(orderedHabits: List<Habit>) {

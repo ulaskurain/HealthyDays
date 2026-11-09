@@ -26,18 +26,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
-    private fun setAppLocale(language: String) {
-        val locale = Locale(language)
-        Locale.setDefault(locale)
-
-        val config = resources.configuration
-        config.setLocale(locale)
-        config.setLayoutDirection(locale)
-
-        @Suppress("DEPRECATION")
-        resources.updateConfiguration(config, resources.displayMetrics)
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         applySavedAppearance()
@@ -53,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
 
-        // Obtén el NavController desde el fragmento dentro del layout incluido
+        // Obtain the NavController from the fragment inside the included layout
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
         val navController = navHostFragment.navController
@@ -63,6 +51,7 @@ class MainActivity : AppCompatActivity() {
             drawerLayout
         )
 
+        // Set the title of the fragment in the action bar
         setupActionBarWithNavController(navController, appBarConfiguration)
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.appBarMain.toolbarTitle.text = when (destination.id) {
@@ -81,6 +70,18 @@ class MainActivity : AppCompatActivity() {
         navDate.text = LocalDate.now().format(
             DateTimeFormatter.ofPattern("dd/MM/yyyy")
         )
+    }
+
+    private fun setAppLocale(language: String) {
+        val locale = Locale(language)
+        Locale.setDefault(locale)
+
+        val config = resources.configuration
+        config.setLocale(locale)
+        config.setLayoutDirection(locale)
+
+        @Suppress("DEPRECATION")
+        resources.updateConfiguration(config, resources.displayMetrics)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
