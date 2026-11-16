@@ -18,7 +18,6 @@ import androidx.navigation.fragment.NavHostFragment
 import com.app.healthydays.databinding.ActivityMainBinding
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import androidx.appcompat.app.AppCompatDelegate
 
 class MainActivity : AppCompatActivity() {
@@ -29,8 +28,6 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         applySavedAppearance()
-        val selectedLanguage = getSavedLanguage()
-        setAppLocale(selectedLanguage)
 
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -72,21 +69,10 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun setAppLocale(language: String) {
-        val locale = Locale(language)
-        Locale.setDefault(locale)
-
-        val config = resources.configuration
-        config.setLocale(locale)
-        config.setLayoutDirection(locale)
-
-        @Suppress("DEPRECATION")
-        resources.updateConfiguration(config, resources.displayMetrics)
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
+        updateSettingsButtonVisibility()
         return true
     }
 

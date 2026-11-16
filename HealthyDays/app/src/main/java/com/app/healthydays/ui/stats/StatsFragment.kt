@@ -62,13 +62,13 @@ class StatsFragment : Fragment() {
     }
 
     private fun setupRangeSelector() {
-        // Marcar el botón antes de añadir el listener, para no disparar una carga extra.
+        // Flag the button before adding the listener, to avoid triggering an extra load.
         binding.toggleRange.check(buttonIdFor(viewModel.selectedRange))
         updateRangeButtons(binding.toggleRange.checkedButtonId)
 
         binding.toggleRange.addOnButtonCheckedListener { group, checkedId, isChecked ->
             if (!isChecked) {
-                // Evitar que quede el grupo sin ninguna opción seleccionada.
+                // Avoid leaving the group without any selected option.
                 if (group.checkedButtonId == View.NO_ID) group.check(checkedId)
                 return@addOnButtonCheckedListener
             }
@@ -164,10 +164,10 @@ class StatsFragment : Fragment() {
         val total = result.availableHabits.size
         val active = result.activeHabitCount
 
-        // Sin hábitos en el historial no hay nada que filtrar.
+        // Without habits in the history there is nothing to filter.
         binding.fabFilter.visibility = if (total > 0) View.VISIBLE else View.GONE
 
-        // El indicador solo aparece si hay un filtro activo.
+        // The indicator only appears if there is an active filter.
         val filtering = total > 0 && active < total
         binding.textFilterInfo.visibility = if (filtering) View.VISIBLE else View.GONE
         if (filtering) {
@@ -185,7 +185,7 @@ class StatsFragment : Fragment() {
         val dialogBinding = DialogStatsFilterBinding.inflate(layoutInflater)
         val container = dialogBinding.filterContainer
 
-        // Copia de trabajo: no cambia nada hasta pulsar Aceptar.
+        // Copy of the work: no changes until Accept is pressed.
         val excluded = viewModel.excludedHabitIds.toMutableSet()
 
         val tint = ColorStateList.valueOf(
@@ -209,7 +209,7 @@ class StatsFragment : Fragment() {
             if (it.categoryId in knownIds) it.categoryId else HabitCategory.OTHER.id
         }
 
-        // Mismo orden de categorías que en Home.
+        // Same order of categories as in Home.
         val categoriesInOrder = viewModel.getCategoryOrder().mapNotNull { id ->
             HabitCategory.entries.firstOrNull { it.id == id }
         }
@@ -233,7 +233,7 @@ class StatsFragment : Fragment() {
             categoryUpdaters.add(updateCategory)
 
             categoryBox.setOnClickListener {
-                // Tras el toque, isChecked ya tiene el estado nuevo.
+                // After the touch, isChecked has the new state.
                 val check = categoryBox.isChecked
                 habits.forEach { habit ->
                     setActive(habit, check)
@@ -244,7 +244,7 @@ class StatsFragment : Fragment() {
 
             container.addView(categoryBox)
 
-            // Los hábitos ya vienen ordenados como en Home (sortOrder).
+            // The habits are already ordered in Home.
             habits.forEach { habit ->
                 val habitBox = CheckBox(context).apply {
                     text = habit.name

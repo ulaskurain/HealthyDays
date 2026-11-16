@@ -66,7 +66,7 @@ abstract class AppDatabase : RoomDatabase() {
             val currentHabits = habitDao().getAllHabits()
             val habitIdMap = mutableMapOf<Pair<String, String>, Int>()
 
-            // Restaurar los hábitos por nombre, incluyendo categoría y orden.
+            // Restore the habits by name, including category and order.
             for (backupHabit in data.habits) {
                 val existingHabit = currentHabits.firstOrNull {
                     it.name == backupHabit.name &&
@@ -91,7 +91,7 @@ abstract class AppDatabase : RoomDatabase() {
                 }
             }
 
-            // Restaurar los días.
+            // Restore the days.
             for (backupDay in data.days) {
                 val existingDay = dayDao().getDayByDate(backupDay.date)
 
@@ -100,7 +100,7 @@ abstract class AppDatabase : RoomDatabase() {
                 }
             }
 
-            // Restaurar finalizaciones, incluidas las de hábitos eliminados.
+            // Restore completions, including those of deleted habits.
             for (backupCompletion in data.completions) {
                 val currentHabitId = habitIdMap[
                     backupCompletion.habitName to backupCompletion.categoryId]

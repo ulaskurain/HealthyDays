@@ -27,7 +27,7 @@ class DailyChartView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     companion object {
-        /** Días que caben exactamente en el ancho visible de la gráfica. */
+        /** Days that fits exactly in the visible width of the graph. */
         const val WINDOW_DAYS = 30
     }
 
@@ -35,17 +35,17 @@ class DailyChartView @JvmOverloads constructor(
 
     private var days: List<DayStat> = emptyList()
 
-    // Geometría calculada en updateLayout()
+    // Geometry calculated in updateLayout()
     private var plotLeft = 0f
     private var plotRight = 0f
     private var plotTop = 0f
     private var plotBottom = 0f
-    private var spacing = 0f          // distancia fija entre días
+    private var spacing = 0f          // fixed distance between days
     private var maxScroll = 0f
-    private var scrollOffset = 0f     // px desplazados desde el día más antiguo
+    private var scrollOffset = 0f     // px moved since the oldest day
     private val edgePadding = dp(6f)
 
-    // Selección (cuadrito)
+    // Selection
     private var selectedIndex = -1
     private var isSelecting = false
 
@@ -107,10 +107,10 @@ class DailyChartView @JvmOverloads constructor(
                 val index = pointNear(e.x, e.y, dp(32f))
 
                 if (index != -1) {
-                    // Mostrar los datos del día seleccionado.
+                    // Show the data of the selected day
                     selectedIndex = index
                 } else {
-                    // Si se toca fuera de un punto, ocultar el cuadrito.
+                    // If touch outside a point, hide the square
                     selectedIndex = -1
                 }
 
@@ -136,7 +136,7 @@ class DailyChartView @JvmOverloads constructor(
                 distanceY: Float
             ): Boolean {
                 if (maxScroll <= 0f) return false
-                // Si el gesto es horizontal, que la pantalla no haga scroll vertical.
+                // If the gesture is horizontal, don't scroll the screen vertically.
                 if (abs(distanceX) > abs(distanceY)) {
                     parent?.requestDisallowInterceptTouchEvent(true)
                 }
@@ -168,7 +168,7 @@ class DailyChartView @JvmOverloads constructor(
         days = newDays
         selectedIndex = -1
         isSelecting = false
-        scrollOffset = Float.MAX_VALUE // se recorta a maxScroll: empieza en el día más reciente
+        scrollOffset = Float.MAX_VALUE // it is clipped to maxScroll: it starts at the most recent day
         scroller.forceFinished(true)
         invalidate()
     }
@@ -180,7 +180,7 @@ class DailyChartView @JvmOverloads constructor(
         when (event.actionMasked) {
             MotionEvent.ACTION_MOVE -> {
                 if (isSelecting) {
-                    // Mientras se mantiene pulsado, el cuadrito sigue al dedo.
+                    // While keeping it pressed, the square follows the finger.
                     val index = nearestByX(event.x)
                     if (index != -1 && index != selectedIndex) {
                         selectedIndex = index
@@ -228,7 +228,7 @@ class DailyChartView @JvmOverloads constructor(
     private fun yFor(percentage: Float): Float =
         plotBottom - (plotBottom - plotTop) * percentage / 100f
 
-    /** Punto con datos, visible, a menos de maxDistance del toque. -1 si no hay. */
+    /** Point with data, visible, at most maxDistance from the touch. -1 if none. */
     private fun pointNear(x: Float, y: Float, maxDistance: Float): Int {
         var best = -1
         var bestDistance = maxDistance
@@ -245,7 +245,7 @@ class DailyChartView @JvmOverloads constructor(
         return best
     }
 
-    /** Punto con datos, visible, más cercano en horizontal. -1 si no hay. */
+    /** Point with data, visible, closest in horizontal. -1 if none. */
     private fun nearestByX(x: Float): Int {
         var best = -1
         var bestDistance = Float.MAX_VALUE
@@ -262,7 +262,7 @@ class DailyChartView @JvmOverloads constructor(
         return best
     }
 
-    /** Cada cuántos días se pone etiqueta en el eje X. */
+    /** Every how many days is a label on the X axis. */
     private fun labelStep(visibleDays: Int): Int = when {
         visibleDays <= 7 -> 1
         visibleDays <= 14 -> 2
@@ -277,7 +277,7 @@ class DailyChartView @JvmOverloads constructor(
         val chartHeight = plotBottom - plotTop
         if (chartWidth <= 0f || chartHeight <= 0f) return
 
-        // Eje Y fijo: líneas de referencia y etiquetas
+        // Y axis fixed: reference lines and labels
         textPaint.textAlign = Paint.Align.RIGHT
         for (value in intArrayOf(0, 25, 50, 75, 100)) {
             val y = plotBottom - chartHeight * value / 100f
@@ -296,7 +296,7 @@ class DailyChartView @JvmOverloads constructor(
         val n = days.size
         if (n == 0) return
 
-        // Etiquetas del eje X: mostrar también el primer y último día visibles.
+        // X axis labels: show also the first and last visible days.
         val labelY = plotBottom + dp(18f)
         val step = labelStep(min(n, WINDOW_DAYS))
         textPaint.textAlign = Paint.Align.CENTER
@@ -322,7 +322,7 @@ class DailyChartView @JvmOverloads constructor(
             val isLast = i == lastVisibleIndex
             val followsStep = (n - 1 - i) % step == 0
 
-            // Solo forzar la primera etiqueta cuando estamos al final del gráfico.
+            // Only force the first label when we are at the end of the graph.
             val showFirst = isFirst && isAtEnd
 
             if (showFirst || isLast || followsStep) {
@@ -330,14 +330,14 @@ class DailyChartView @JvmOverloads constructor(
             }
         }
 
-        // Línea y puntos, recortados al área de la gráfica
+        // Line and points, clipped to the chart area
         canvas.save()
         canvas.clipRect(
             plotLeft, 0f,
             (width - paddingRight).toFloat(), height.toFloat()
         )
 
-        // Segmentos: solo entre días consecutivos que ambos tienen datos
+        // Segments: only between consecutive days with data
         for (i in 1 until n) {
             val previous = days[i - 1].percentage ?: continue
             val current = days[i].percentage ?: continue
@@ -347,7 +347,7 @@ class DailyChartView @JvmOverloads constructor(
             canvas.drawLine(x0, yFor(previous), x1, yFor(current), linePaint)
         }
 
-        // Puntos: uno por cada día con datos
+        // Points: one per day with data
         val radius = dp(4f)
         for (i in 0 until n) {
             val percentage = days[i].percentage ?: continue
@@ -369,10 +369,10 @@ class DailyChartView @JvmOverloads constructor(
         val percentage = day.percentage ?: return
 
         val px = xFor(index)
-        if (px < plotLeft || px > plotRight) return // el punto salió de la vista al deslizar
+        if (px < plotLeft || px > plotRight) return // the point is not visible when sliding
         val py = yFor(percentage)
 
-        // Aro alrededor del punto seleccionado
+        // Ring around the selected point
         canvas.drawCircle(px, py, dp(7f), ringPaint)
 
         val text = "${fullDate(day.date)} · ${percentage.roundToInt()}% " +
@@ -387,7 +387,7 @@ class DailyChartView @JvmOverloads constructor(
         val maxLeft = max(margin, width - boxWidth - margin)
         val left = (px - boxWidth / 2f).coerceIn(margin, maxLeft)
 
-        // Encima del punto; si no cabe (por ejemplo al 100 %), debajo.
+        // Above the point: if it doesn't fit (for example at 100%), below.
         var top = py - dp(12f) - boxHeight
         if (top < 0f) top = py + dp(12f)
 

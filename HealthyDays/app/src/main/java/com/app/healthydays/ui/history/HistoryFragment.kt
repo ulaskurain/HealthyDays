@@ -38,28 +38,19 @@ class HistoryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        _binding = FragmentHistoryBinding.inflate(
-            inflater,
-            container,
-            false
-        )
-
+        _binding = FragmentHistoryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?
-    ) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
         setupCalendar()
         observeViewModel()
 
-        // Cargar todos los días registrados
+        // Load all registered days
         viewModel.loadDays()
     }
 
@@ -126,7 +117,7 @@ class HistoryFragment : Fragment() {
             }
         }
 
-        // Cargar el día de hoy al entrar en History
+        // Load the current day when opening History
         binding.calendarView.post {
             selectedDay = today
 
@@ -140,13 +131,9 @@ class HistoryFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(
-                Lifecycle.State.STARTED
-            ) {
-
-                // Hábitos del día seleccionado
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // Habits of the selected day
                 launch {
                     viewModel.habits.collect { habits ->
                         historyAdapter.updateData(habits)
@@ -167,7 +154,7 @@ class HistoryFragment : Fragment() {
                     }
                 }
 
-                // Rating del día seleccionado
+                // Rating of the selected day
                 launch {
                     viewModel.selectedDay.collect { day ->
                         if (day != null) {
@@ -178,7 +165,7 @@ class HistoryFragment : Fragment() {
                     }
                 }
 
-                // Días registrados y sus colores
+                // Registered days and their colours
                 launch {
                     viewModel.days.collect { days ->
                         updateCalendarDecorators(days)
@@ -189,11 +176,9 @@ class HistoryFragment : Fragment() {
     }
 
     private fun updateCalendarDecorators(days: List<Day>) {
-
         binding.calendarView.removeDecorators()
 
         for (day in days) {
-
             val parts = day.date.split("-")
 
             if (parts.size != 3) continue
@@ -202,24 +187,20 @@ class HistoryFragment : Fragment() {
             val month = parts[1].toInt()
             val dayOfMonth = parts[2].toInt()
 
-            val calendarDay = CalendarDay.from(
-                year,
-                month,
-                dayOfMonth
-            )
+            val calendarDay = CalendarDay.from(year, month, dayOfMonth)
 
             val color = when {
-                // 0 - 49 → rojo
+                // 0 - 49 → red
                 day.rating < 50 -> {
                     ContextCompat.getColor(requireContext(), R.color.sad_color)
                 }
 
-                // 50 - 74 → naranja
+                // 50 - 74 → orange
                 day.rating < 75 -> {
                     ContextCompat.getColor(requireContext(), R.color.meh_color)
                 }
 
-                // 75 - 100 → verde
+                // 75 - 100 → green
                 else -> {
                     ContextCompat.getColor(requireContext(), R.color.happy_color)
                 }
@@ -228,7 +209,7 @@ class HistoryFragment : Fragment() {
             binding.calendarView.addDecorator(RatingDayDecorator(calendarDay, color))
         }
 
-        // Círculo alrededor de HOY
+        // Circle around TODAY
         val today = CalendarDay.today()
         val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.today_circle)
 

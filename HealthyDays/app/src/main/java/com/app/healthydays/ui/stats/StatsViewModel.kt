@@ -24,8 +24,8 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
     var selectedRange: StatsRange = StatsRange.LAST_7_DAYS
         private set
 
-    /** habitId de los hábitos desactivados. Vacío = todos activos. */
-    var excludedHabitIds: Set<Int> = emptySet() // TEMPORAL para probar: setOf(1)
+    /** habitId of the disabled habits. Empty = all active. */
+    var excludedHabitIds: Set<Int> = emptySet()
         private set
 
     private var loadJob: Job? = null
@@ -37,8 +37,8 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
 
     fun load(range: StatsRange) {
         selectedRange = range
-        val excluded = excludedHabitIds // copia para esta carga
-        loadJob?.cancel() // si el usuario cambia de rango rápido, gana el último
+        val excluded = excludedHabitIds // copy of this charge
+        loadJob?.cancel() // if the user changes the range, cancel the previous load
         loadJob = viewModelScope.launch(Dispatchers.IO) {
             val today = StatsCalculator.today()
             val from = StatsCalculator.fixedRangeStart(range, today)
@@ -53,7 +53,7 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    /** Orden de categorías definido en Editar hábitos (el mismo que Home). */
+    /** Order of the categories defined in Edit Habits (the same as Home). */
     fun getCategoryOrder(): List<String> {
         val allCategories = com.app.healthydays.data.entity.HabitCategory.entries.map { it.id }
 
@@ -65,7 +65,7 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
         return (saved + allCategories).distinct()
     }
 
-    /** Guarda el filtro y recalcula con el rango actual. */
+    /** Save the filter and recalculate with the current range. */
     fun setExcludedHabits(ids: Set<Int>) {
         excludedHabitIds = ids
         load(selectedRange)

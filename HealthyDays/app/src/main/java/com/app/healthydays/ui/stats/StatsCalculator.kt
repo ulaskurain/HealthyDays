@@ -15,10 +15,10 @@ object StatsCalculator {
 
     private const val DATE_PATTERN = "yyyy-MM-dd"
 
-    /** Hoy en formato yyyy-MM-dd, igual que LocalDate.now().toString(). */
+    /** Today in format yyyy-MM-dd, same as LocalDate.now().toString(). */
     fun today(): String = format(Calendar.getInstance())
 
-    /** Primer día de los rangos fijos; null para ALL (depende de los datos). */
+    /** First day of the fixed ranges; null for ALL (depending on the data). */
     fun fixedRangeStart(range: StatsRange, today: String): String? =
         when (range) {
             StatsRange.LAST_7_DAYS -> addDays(today, -6)
@@ -32,16 +32,16 @@ object StatsCalculator {
         today: String,
         excludedHabitIds: Set<Int> = emptySet()
     ): StatsResult {
-        // El inicio de "Todo" se calcula con todos los datos, sin filtrar,
-        // para que el rango no cambie al activar o desactivar hábitos.
+        // The beginning of "All" is calculated with all the data, without filtering,
+        // so that the range doesn't change when activating or deactivating habits
         val start = fixedRangeStart(range, today)
             ?: completions.map { it.date }.filter { it <= today }.minOrNull()
             ?: today
 
         val inRangeAll = completions.filter { it.date in start..today }
 
-        // Entradas del filtro: se agrupan por categoría y nombre, así un hábito
-        // borrado y recreado muchas veces sale una sola vez.
+        // Filter entries: they group by category and name, so a deleted and recreated
+        // habit many times will appear only once.
         val availableHabits = inRangeAll
             .groupBy { it.habitId }
             .map { (habitId, rows) ->
@@ -59,11 +59,11 @@ object StatsCalculator {
                     .thenBy { it.name.lowercase() }
             )
 
-        // A partir de aquí todo sale de las filas de los hábitos activos.
+        // Since here everything is calculated with the rows of active habits
         val inRange = inRangeAll.filter { it.habitId !in excludedHabitIds }
         val rowsByDate = inRange.groupBy { it.date }
 
-        // Un DayStat por cada día del rango. Sin filas => planned = 0 => sin datos.
+        // One DayStat per day in the range. Without rows => planned = 0 => no data.
         val days = datesBetween(start, today).map { date ->
             val rows = rowsByDate[date].orEmpty()
             DayStat(
@@ -81,8 +81,8 @@ object StatsCalculator {
             daysWithData = percentages.size
         )
 
-        // Agrupado por habitId: un hábito borrado y recreado con el mismo
-        // nombre tiene otro habitId, así que sale como hábito distinto.
+        // Grouped by habitId: a habit that is deleted and recreated with the same name
+        // is assigned a different habitId, so it appears as a separate habit.
         val habits = inRange
             .groupBy { it.habitId }
             .map { (habitId, rows) ->
@@ -112,7 +112,7 @@ object StatsCalculator {
         )
     }
 
-    // ---- Fechas ----
+    // ---- Dates ----
 
     private fun newFormat() = SimpleDateFormat(DATE_PATTERN, Locale.US)
 

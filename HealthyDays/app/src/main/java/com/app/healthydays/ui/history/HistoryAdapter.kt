@@ -61,28 +61,17 @@ class HistoryAdapter(
 
         return if (viewType == TYPE_CATEGORY) {
             CategoryViewHolder(
-                ItemHabitCategoryBinding.inflate(
-                    inflater,
-                    parent,
-                    false
-                )
+                ItemHabitCategoryBinding.inflate(inflater, parent, false)
             )
         } else {
             HabitViewHolder(
-                ItemHistoryHabitBinding.inflate(
-                    inflater,
-                    parent,
-                    false
-                )
+                ItemHistoryHabitBinding.inflate(inflater, parent, false)
             )
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onBindViewHolder(
-        holder: RecyclerView.ViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = items[position]) {
             is ListItem.CategoryHeader -> {
                 val category = item.category

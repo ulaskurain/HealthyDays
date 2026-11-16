@@ -17,7 +17,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.app.healthydays.R
@@ -120,12 +122,15 @@ class SettingsFragment : Fragment() {
     // ----------------------------------------------------
 
     private fun updateCurrentLanguage() {
-        val currentLanguage = viewModel.getSavedLanguage()
+        val currentLanguage = AppCompatDelegate
+            .getApplicationLocales()
+            .toLanguageTags()
+            .ifEmpty { "en" }
+
         val languageIndex = languageCodes.indexOf(currentLanguage)
 
-        if (languageIndex >= 0) {
-            binding.textCurrentLanguage.text = languages[languageIndex]
-        }
+        binding.textCurrentLanguage.text =
+            languages.getOrElse(languageIndex) { languages[0] }
     }
 
     private fun showLanguageDialog() {
@@ -147,7 +152,9 @@ class SettingsFragment : Fragment() {
             .setPositiveButton(android.R.string.ok) { dialog, _ ->
                 val selectedCode = languageCodes[checkedItem]
                 viewModel.saveLanguage(selectedCode)
-                requireActivity().recreate()
+                AppCompatDelegate.setApplicationLocales(
+                    LocaleListCompat.forLanguageTags(selectedCode)
+                )
                 dialog.dismiss()
             }
             .setNegativeButton(android.R.string.cancel, null)

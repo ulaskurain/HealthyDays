@@ -2,7 +2,6 @@ package com.app.healthydays.ui.home
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.healthydays.R
@@ -101,7 +100,7 @@ class EditHabitAdapter(
         val toItem = items[toPosition]
 
 
-        // Mover una categoría completa.
+        // Move a complete category
         if (fromItem is ListItem.CategoryHeader) {
             val fromCategoryId = fromItem.category.id
             val targetCategoryId = when (toItem) {
@@ -117,11 +116,11 @@ class EditHabitAdapter(
                 fromCategoryIndex == toCategoryIndex
             ) return false
 
-            // Actualizar el orden lógico.
+            // Update the logic order
             val movedCategory = orderedCategoryIds.removeAt(fromCategoryIndex)
             orderedCategoryIds.add(toCategoryIndex, movedCategory)
 
-            // Encontrar las posiciones reales del bloque.
+            // Find the real positions of the block
             val block = items.filter { item ->
                 when (item) {
                     is ListItem.CategoryHeader -> item.category.id == fromCategoryId
@@ -134,12 +133,12 @@ class EditHabitAdapter(
             val oldStart = items.indexOf(block.first())
             val blockSize = block.size
 
-            // Retirar el bloque.
+            // Remove the block
             repeat(blockSize) {
                 items.removeAt(oldStart)
             }
 
-            // Insertarlo junto a la categoría destino.
+            // Insert it with the destiny category
             val targetStart = items.indexOfFirst { item ->
                 when (item) {
                     is ListItem.CategoryHeader -> item.category.id == targetCategoryId
@@ -169,7 +168,7 @@ class EditHabitAdapter(
 
             items.addAll(insertionIndex, block)
 
-            // Notificar cada movimiento de fila individualmente.
+            // Notify each movement of the row individually
             if (insertionIndex < oldStart) {
                 for (offset in 0 until blockSize) {
                     notifyItemMoved(oldStart + offset, insertionIndex + offset)
@@ -183,7 +182,7 @@ class EditHabitAdapter(
             return true
         }
 
-        // Reordenar hábitos dentro de la misma categoría.
+        // Reorder habits inside the same category
         if (fromItem is ListItem.HabitRow && toItem is ListItem.HabitRow) {
             val fromHabit = fromItem.habit
             val toHabit = toItem.habit
@@ -217,7 +216,7 @@ class EditHabitAdapter(
                 reorderedById[habit.habitId] ?: habit
             }
 
-            // Actualizar la lista visible sin reconstruirla.
+            // Update the visible list without reconstructing it
             val fromItemIndex = items.indexOfFirst {
                 it is ListItem.HabitRow &&
                         it.habit.habitId == fromHabit.habitId
@@ -238,10 +237,10 @@ class EditHabitAdapter(
                 )
             )
 
-            // Sin notifyDataSetChanged durante el gesto.
+            // Without notifyDataSetChanged during the gesture
             notifyItemMoved(fromItemIndex, toItemIndex)
 
-            // Actualizar los datos sin interrumpir el arrastre.
+            // Update the data without interrupting the drag
             items.indices.forEach { index ->
                 val item = items[index]
                 if (item is ListItem.HabitRow) {

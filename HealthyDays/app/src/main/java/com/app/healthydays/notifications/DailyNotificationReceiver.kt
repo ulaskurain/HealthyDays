@@ -18,10 +18,10 @@ import java.util.Locale
 class DailyNotificationReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
-        // Aseguramos que el canal existe
+        // Get sure the channel exists
         NotificationHelper.createNotificationChannel(context)
 
-        // Comprobamos permiso de notificaciones en Android 13+
+        // Get sure to have the permission of notifications on Android 13+
         val notificationPermissionGranted =
             android.os.Build.VERSION.SDK_INT <
                     android.os.Build.VERSION_CODES.TIRAMISU ||
@@ -42,7 +42,7 @@ class DailyNotificationReceiver : BroadcastReceiver() {
         configuration.setLayoutDirection(locale)
         val localizedContext = context.createConfigurationContext(configuration)
 
-        // Intent para abrir la aplicación al pulsar la notificación
+        // Intent to open the app when tapping the notification
         val openAppIntent = Intent(context, MainActivity::class.java)
 
         val pendingIntent = PendingIntent.getActivity(
@@ -52,7 +52,7 @@ class DailyNotificationReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Construimos la notificación
+        // Build the notification
         val notification = NotificationCompat.Builder(context, NotificationHelper.CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_logo_notifications)
             .setContentTitle(localizedContext.getString(R.string.notification_title))
@@ -62,7 +62,7 @@ class DailyNotificationReceiver : BroadcastReceiver() {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
-        // Mostramos la notificación
+        // Show the notification
         NotificationManagerCompat.from(context).notify(1001, notification)
     }
 }
