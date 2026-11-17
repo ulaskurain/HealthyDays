@@ -16,6 +16,7 @@ lifecycleViewmodelKtx = "2.9.1"
 navigationFragmentKtx = "2.9.1"
 navigationUiKtx = "2.9.1"
 materialCalendarviewVersion = "2.0.1"
+playServicesAds = "23.6.0"
 roomRuntime = "2.6.1"
 gsonVersion = "2.11.0"
 robolectric = "4.13"
@@ -43,6 +44,7 @@ androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecy
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 prolificinteractive-material-calendarview = { module = "com.github.prolificinteractive:material-calendarview", version.ref = "materialCalendarviewVersion" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }

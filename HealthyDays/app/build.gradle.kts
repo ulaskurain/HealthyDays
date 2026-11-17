@@ -81,4 +81,7 @@ dependencies {
     androidTestImplementation(libs.androidx.room.testing)
     androidTestImplementation(libs.androidx.core.testing)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+
+    // Google Ads
+    implementation(libs.play.services.ads)
 }

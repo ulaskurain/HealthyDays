@@ -80,5 +80,5 @@
     <string name="stats_select_all">All</string>
     <string name="stats_select_none">None</string>
     <string name="stats_filter_showing">Showing %1$d of %2$d habits</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="banner_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
 </resources>

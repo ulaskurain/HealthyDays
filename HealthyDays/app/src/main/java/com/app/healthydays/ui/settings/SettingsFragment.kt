@@ -125,7 +125,7 @@ class SettingsFragment : Fragment() {
         val currentLanguage = AppCompatDelegate
             .getApplicationLocales()
             .toLanguageTags()
-            .ifEmpty { "en" }
+            .ifEmpty { resources.configuration.locales[0].language }
 
         val languageIndex = languageCodes.indexOf(currentLanguage)
 
@@ -134,7 +134,11 @@ class SettingsFragment : Fragment() {
     }
 
     private fun showLanguageDialog() {
-        val currentLanguage = viewModel.getSavedLanguage()
+        val currentLanguage = AppCompatDelegate.getApplicationLocales()
+            .toLanguageTags()
+            .ifEmpty {
+                resources.configuration.locales[0].language
+            }
         var checkedItem = languageCodes.indexOf(currentLanguage)
 
         if (checkedItem < 0) {
@@ -300,7 +304,14 @@ class SettingsFragment : Fragment() {
             .setPositiveButton(android.R.string.ok) { dialog, _ ->
                 val selectedAppearance = values[checkedItem]
                 viewModel.saveAppearance(selectedAppearance)
-                requireActivity().recreate()
+
+                val nightMode = when (selectedAppearance) {
+                    "light" -> AppCompatDelegate.MODE_NIGHT_NO
+                    "dark" -> AppCompatDelegate.MODE_NIGHT_YES
+                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                }
+
+                AppCompatDelegate.setDefaultNightMode(nightMode)
                 dialog.dismiss()
             }
             .setNegativeButton(android.R.string.cancel, null)
@@ -428,8 +439,8 @@ class SettingsFragment : Fragment() {
     }
 
     private fun deleteAllData() {
-        viewModel.deleteAllData { result ->
-            if (!isAdded) return@deleteAllData
+        viewModel.deleteAllData callback@{ result ->
+            if (!isAdded) return@callback
 
             result.onSuccess {
                 Toast.makeText(

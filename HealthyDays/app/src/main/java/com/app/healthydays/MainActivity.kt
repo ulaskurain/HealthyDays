@@ -2,28 +2,37 @@ package com.app.healthydays
 
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.NavHostFragment
 import com.app.healthydays.databinding.ActivityMainBinding
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
+import com.google.android.material.navigation.NavigationView
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import androidx.appcompat.app.AppCompatDelegate
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var adView: AdView
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +59,23 @@ class MainActivity : AppCompatActivity() {
 
         // Set the title of the fragment in the action bar
         setupActionBarWithNavController(navController, appBarConfiguration)
+
+        // Set up Ad Banner
+        val adContainer = binding.appBarMain.contentMain.adContainer
+
+        adView = AdView(this)
+        adView.setAdSize(getAdaptiveAdSize())
+        adView.adUnitId = getString(R.string.banner_ad_unit_id)
+        adContainer.addView(adView)
+
+        adView.adListener = object : AdListener() {
+            override fun onAdFailedToLoad(error: LoadAdError) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    if (!isDestroyed) adView.loadAd(AdRequest.Builder().build())
+                }, 30_000)
+            }
+        }
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.appBarMain.toolbarTitle.text = when (destination.id) {
                 R.id.nav_home,
@@ -57,8 +83,16 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_stats -> destination.label
                 else -> ""
             }
+
             updateSettingsButtonVisibility()
         }
+
+        MobileAds.initialize(this) {
+            runOnUiThread {
+                if (!isDestroyed) adView.loadAd(AdRequest.Builder().build())
+            }
+        }
+
         navView.setupWithNavController(navController)
 
         val headerView = navView.getHeaderView(0)
@@ -81,9 +115,19 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    private fun getSavedLanguage(): String {
-        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
-        return prefs.getString("app_language", "en") ?: "en" // idioma por defecto
+    override fun onPause() {
+        adView.pause()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        adView.resume()
+    }
+
+    override fun onDestroy() {
+        adView.destroy()
+        super.onDestroy()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -122,5 +166,11 @@ class MainActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
             }
         }
+    }
+
+    private fun getAdaptiveAdSize(): AdSize {
+        val displayMetrics = resources.displayMetrics
+        val adWidth = (displayMetrics.widthPixels / displayMetrics.density).toInt()
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
     }
 }
